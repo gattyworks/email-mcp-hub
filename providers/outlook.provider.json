@@ -1,0 +1,20 @@
+{
+  "//": "OUTLOOK / MICROSOFT 365 provider template (Microsoft Graph).",
+  "//copy": "Copy the entry under mcpServers into ../.mcp.json and rename it (e.g. outlook-work).",
+  "//server": "Example uses an MS-Graph-based Outlook MCP server. Verify the exact package on the MCP registry and adjust command/args to match the one you choose.",
+  "//auth": "Register an app in Azure AD (Entra ID), grant Mail.ReadWrite / Mail.Send, and create a client secret. Put the IDs/secret in .env.",
+  "//secrets": "Add the env vars below to your .env (and .env.example).",
+
+  "mcpServers": {
+    "outlook-CHANGE_ME": {
+      "command": "npx",
+      "args": ["-y", "<outlook-mcp-package>"],
+      "env": {
+        "MS_TENANT_ID": "${OUTLOOK_CHANGE_ME_TENANT_ID}",
+        "MS_CLIENT_ID": "${OUTLOOK_CHANGE_ME_CLIENT_ID}",
+        "MS_CLIENT_SECRET": "${OUTLOOK_CHANGE_ME_CLIENT_SECRET}",
+        "MS_USER_EMAIL": "${OUTLOOK_CHANGE_ME_USER}"
+      }
+    }
+  }
+}

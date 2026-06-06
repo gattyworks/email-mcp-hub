@@ -1,0 +1,23 @@
+{
+  "//": "GENERIC IMAP/SMTP provider template — works with Fastmail, Zoho, Migadu, self-hosted, etc.",
+  "//copy": "Copy the entry under mcpServers into ../.mcp.json and rename it (e.g. imap-fastmail, imap-zoho).",
+  "//server": "Uses mcp-email-server (https://github.com/ai-zerolab/mcp-email-server), launched via uvx — requires `uv` installed.",
+  "//swap": "Prefer a different IMAP MCP server? Replace command/args; keep the env-var pattern.",
+  "//secrets": "Add the env vars below to your .env (and .env.example). Use an APP-SPECIFIC password.",
+  "//naming": "Suffix the env vars per account (e.g. IMAP_ZOHO_*) so multiple IMAP mailboxes don't collide.",
+
+  "mcpServers": {
+    "imap-CHANGE_ME": {
+      "command": "uvx",
+      "args": ["mcp-email-server", "stdio"],
+      "env": {
+        "EMAIL_HOST_IMAP": "${IMAP_CHANGE_ME_HOST}",
+        "EMAIL_PORT_IMAP": "${IMAP_CHANGE_ME_PORT:-993}",
+        "EMAIL_HOST_SMTP": "${SMTP_CHANGE_ME_HOST}",
+        "EMAIL_PORT_SMTP": "${SMTP_CHANGE_ME_PORT:-465}",
+        "EMAIL_USERNAME": "${IMAP_CHANGE_ME_USER}",
+        "EMAIL_PASSWORD": "${IMAP_CHANGE_ME_PASSWORD}"
+      }
+    }
+  }
+}

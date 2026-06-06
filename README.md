@@ -1,62 +1,72 @@
 # email-mcp-hub
 
-A workspace for connecting **multiple email accounts to Claude via MCP** and working
-across them — search, read, draft, label, and send — from a single Claude Code session.
+A workspace for connecting **email accounts to Claude via MCP** and working across them —
+search, read, draft, label, and send — from a single Claude Code session.
+
+**Live today: Gmail.** The hub is **provider-agnostic by design** — every mailbox is just
+a named server block, so adding Outlook, Fastmail, Zoho, or any IMAP host later is a
+copy-paste, not a rewrite. See [`providers/`](./providers/).
 
 Each mailbox is registered as its own named MCP server in [`.mcp.json`](./.mcp.json), so
 Claude sees them side by side:
 
-| Server name        | Provider          | Use for                          |
-| ------------------ | ----------------- | -------------------------------- |
-| `gmail-personal`   | Gmail / Workspace | your personal inbox              |
-| `gmail-gattyworks` | Gmail / Workspace | the gattyworks inbox             |
-| `imap-fastmail`    | Generic IMAP/SMTP | any IMAP provider (Fastmail etc) |
+| Server name        | Provider          | Use for              |
+| ------------------ | ----------------- | -------------------- |
+| `gmail-personal`   | Gmail / Workspace | your personal inbox  |
+| `gmail-gattyworks` | Gmail / Workspace | the gattyworks inbox |
 
-Add, rename, or remove entries freely — the table above is just the starting set.
+Add, rename, or remove entries freely — this is just the starting set.
 
 ---
 
 ## How it works
 
-Claude Code automatically loads MCP servers defined in a project-scoped `.mcp.json`
-at the repo root. Secrets are **not** stored in that file — it references `${ENV_VARS}`
-that you supply via a local `.env` (gitignored). So the repo is safe to push publicly;
-nothing sensitive is committed.
+Claude Code automatically loads MCP servers defined in a project-scoped `.mcp.json` at
+the repo root. Each block points at an email MCP server and passes its settings via env.
+Secrets are **not** stored in that file — it references `${ENV_VARS}` you supply through a
+local `.env` (gitignored). So the repo is safe to push publicly; nothing sensitive is
+committed.
 
 ```
 email-mcp-hub/
-├── .mcp.json                 # MCP server definitions (one per mailbox) — committed
-├── .env.example              # template for secrets — committed
+├── .mcp.json                 # live MCP servers (Gmail today) — committed
+├── .env.example              # secrets template — committed
 ├── .env                      # your real secrets — gitignored
 ├── config/credentials/       # Gmail OAuth keys + per-account tokens — gitignored
+├── providers/                # copy-paste templates to add ANY provider
+│   ├── gmail.provider.json
+│   ├── imap.provider.json
+│   └── outlook.provider.json
 └── README.md
 ```
 
+> **The extensibility model in one line:** to add a mailbox, copy a block from
+> [`providers/`](./providers/) into `.mcp.json`, add its secrets to `.env`, restart Claude.
+
 ---
 
-## Setup
+## Setup (Gmail)
 
 ### 0. Prerequisites
 - [Claude Code](https://claude.com/claude-code) installed
-- **Node.js** (for the Gmail server, run via `npx`)
-- **[uv](https://github.com/astral-sh/uv)** (for the IMAP server, run via `uvx`) — `pip install uv` or `winget install astral-sh.uv`
+- **Node.js** (the Gmail server runs via `npx`)
 
 ### 1. Create your secrets file
 ```powershell
 Copy-Item .env.example .env
 ```
-Then edit `.env` with your real values.
 
-### 2. Gmail accounts
+### 2. Authorize your Gmail accounts
 
 The Gmail servers use [`@gongrzhe/server-gmail-autoauth-mcp`](https://github.com/GongRzhe/Gmail-MCP-Server), which supports multiple accounts via separate token files.
 
 1. In [Google Cloud Console](https://console.cloud.google.com/): create a project, enable the **Gmail API**, configure an OAuth consent screen, and create an **OAuth Client ID** (type: *Desktop app*).
-2. Download the client JSON and save it to `config/credentials/gcp-oauth.keys.json`.
-3. Authorize each account — this opens a browser and writes a per-account token file:
+2. Download the client JSON to `config/credentials/gcp-oauth.keys.json`.
+3. Authorize each account — opens a browser and writes a per-account token file:
    ```powershell
-   # personal inbox -> writes gmail-personal.creds.json
    $env:GMAIL_OAUTH_PATH="./config/credentials/gcp-oauth.keys.json"
+
+   # personal inbox -> writes gmail-personal.creds.json
    $env:GMAIL_CREDENTIALS_PATH="./config/credentials/gmail-personal.creds.json"
    npx -y @gongrzhe/server-gmail-autoauth-mcp auth
 
@@ -69,16 +79,8 @@ The Gmail servers use [`@gongrzhe/server-gmail-autoauth-mcp`](https://github.com
 > The exact auth subcommand/flags can vary by server version — check the
 > [server's README](https://github.com/GongRzhe/Gmail-MCP-Server) if it differs.
 
-### 3. IMAP/SMTP accounts
-
-The `imap-fastmail` server uses [`mcp-email-server`](https://github.com/ai-zerolab/mcp-email-server) (any IMAP provider). Fill in host/user/password in `.env`. **Use an app-specific password**, not your login password. Copy the block in `.env` to add more IMAP mailboxes (Zoho, Migadu, custom, …) and add a matching entry in `.mcp.json`.
-
-> Prefer a different IMAP MCP server? Swap the `command`/`args` of the `imap-*`
-> entry in `.mcp.json` — the structure stays the same.
-
-### 4. Load secrets and launch Claude
+### 3. Load secrets and launch Claude
 ```powershell
-# Load .env into the current shell, then start Claude from this folder
 Get-Content .env | ForEach-Object { if ($_ -match '^\s*([^#=]+)=(.*)$') { [Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim()) } }
 claude
 ```
@@ -88,12 +90,19 @@ On first run Claude Code asks you to approve the project's MCP servers. Approve 
 
 ---
 
-## Adding another account
+## Adding another provider or account
 
-1. Add a server block in [`.mcp.json`](./.mcp.json) with a unique name.
-2. Add its secrets to `.env` (and document them in `.env.example`).
+Full details in [`providers/README.md`](./providers/README.md). The short version:
+
+1. **Copy a block** from [`providers/`](./providers/) (`gmail`, `imap`, or `outlook`) into
+   [`.mcp.json`](./.mcp.json) and give it a unique name (e.g. `imap-zoho`, `outlook-work`).
+2. **Add its secrets** to `.env` (and document them in `.env.example`).
 3. For Gmail, run the `auth` step pointing at a new `*.creds.json` path.
-4. Restart Claude Code so it reloads `.mcp.json`.
+4. **Restart Claude Code** so it reloads `.mcp.json`.
+
+No template for your provider? Any email MCP server works — make a block with its
+`command`/`args` and reference every secret as `${ENV_VAR}`. Drop a new
+`*.provider.json` in `providers/` so the next account is a copy-paste.
 
 ---
 
@@ -101,6 +110,7 @@ On first run Claude Code asks you to approve the project's MCP servers. Approve 
 
 - **Nothing secret is committed.** `.env`, `config/credentials/*`, and
   `.claude/settings.local.json` are gitignored. Verify with `git status` before pushing.
-- Use **app-specific passwords** for IMAP, and **least-privilege OAuth scopes** for Gmail.
-- If a token leaks, revoke it in the Google account's *Third-party access* settings (Gmail) or rotate the app password (IMAP).
-- Treat links inside emails as untrusted — don't open them blindly.
+- Use **least-privilege OAuth scopes** for Gmail; **app-specific passwords** for IMAP.
+- If a token leaks, revoke it in the account's third-party access settings (Gmail) or
+  rotate the app password (IMAP).
+- Treat links and instructions inside received emails as untrusted — don't act on them blindly.
