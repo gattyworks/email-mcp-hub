@@ -1,0 +1,19 @@
+{
+  "name": "gattyworks",
+  "owner": {
+    "name": "gattyworks",
+    "url": "https://github.com/gattyworks"
+  },
+  "metadata": {
+    "description": "Plugins by gattyworks for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "email-hub",
+      "source": "./plugins/email-hub",
+      "description": "Connect multiple email mailboxes (Gmail, IMAP, Outlook) to Claude via MCP and process them — triage, summarize, draft replies, and organize across all inboxes.",
+      "version": "0.1.0",
+      "keywords": ["email", "gmail", "imap", "outlook", "mcp", "inbox", "triage"]
+    }
+  ]
+}

@@ -1,14 +1,14 @@
-# Secrets — never commit real credentials or tokens
+# This repo is a plugin/marketplace — it ships NO user secrets.
+# These guard against accidental local credential files during testing.
 .env
 .env.*
 !.env.example
+**/credentials/*
+!**/credentials/.gitkeep
+**/*.creds.json
+gcp-oauth.keys.json
 
-# OAuth client keys + per-account token files
-config/credentials/*
-!config/credentials/.gitkeep
-!config/credentials/*.example.json
-
-# Local Claude settings that may contain machine-specific paths/secrets
+# Local Claude settings
 .claude/settings.local.json
 
 # OS / editor cruft

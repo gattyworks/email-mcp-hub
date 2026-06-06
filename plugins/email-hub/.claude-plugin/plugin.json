@@ -1,0 +1,12 @@
+{
+  "name": "email-hub",
+  "description": "Connect multiple email mailboxes (Gmail, IMAP, Outlook) to Claude via MCP and process them — triage, summarize, draft replies, and organize across all inboxes. Provider-agnostic and extensible.",
+  "version": "0.1.0",
+  "author": {
+    "name": "gattyworks",
+    "url": "https://github.com/gattyworks"
+  },
+  "homepage": "https://github.com/gattyworks/email-mcp-hub",
+  "license": "MIT",
+  "keywords": ["email", "gmail", "imap", "outlook", "mcp", "inbox", "triage", "productivity"]
+}
