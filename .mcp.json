@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "gmail-personal": {
+      "command": "npx",
+      "args": ["-y", "@gongrzhe/server-gmail-autoauth-mcp"],
+      "env": {
+        "GMAIL_OAUTH_PATH": "${GMAIL_OAUTH_PATH:-./config/credentials/gcp-oauth.keys.json}",
+        "GMAIL_CREDENTIALS_PATH": "./config/credentials/gmail-personal.creds.json"
+      }
+    },
+
+    "gmail-gattyworks": {
+      "command": "npx",
+      "args": ["-y", "@gongrzhe/server-gmail-autoauth-mcp"],
+      "env": {
+        "GMAIL_OAUTH_PATH": "${GMAIL_OAUTH_PATH:-./config/credentials/gcp-oauth.keys.json}",
+        "GMAIL_CREDENTIALS_PATH": "./config/credentials/gmail-gattyworks.creds.json"
+      }
+    },
+
+    "imap-fastmail": {
+      "command": "uvx",
+      "args": ["mcp-email-server", "stdio"],
+      "env": {
+        "EMAIL_HOST_IMAP": "${IMAP_FASTMAIL_HOST}",
+        "EMAIL_PORT_IMAP": "${IMAP_FASTMAIL_PORT:-993}",
+        "EMAIL_HOST_SMTP": "${SMTP_FASTMAIL_HOST}",
+        "EMAIL_PORT_SMTP": "${SMTP_FASTMAIL_PORT:-465}",
+        "EMAIL_USERNAME": "${IMAP_FASTMAIL_USER}",
+        "EMAIL_PASSWORD": "${IMAP_FASTMAIL_PASSWORD}"
+      }
+    }
+  }
+}

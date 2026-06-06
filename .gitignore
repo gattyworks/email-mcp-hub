@@ -1,0 +1,20 @@
+# Secrets — never commit real credentials or tokens
+.env
+.env.*
+!.env.example
+
+# OAuth client keys + per-account token files
+config/credentials/*
+!config/credentials/.gitkeep
+!config/credentials/*.example.json
+
+# Local Claude settings that may contain machine-specific paths/secrets
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.venv/
+__pycache__/
