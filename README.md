@@ -1,5 +1,7 @@
 # gattyworks marketplace
 
+> **Archived.** This repository is no longer maintained and has been archived.
+
 A [Claude Code](https://claude.com/claude-code) plugin marketplace by **gattyworks**.
 
 ## Plugins
